@@ -5,7 +5,7 @@
 
 # 🐾 My Pet Token — Web3 Pet Game
 
-**My Pet Token** เป็นเกมเลี้ยงสัตว์เสมือนจริงที่พัฒนาบนเว็บไซต์ โดยประยุกต์ใช้เทคโนโลยี Web3 และ Blockchain ร่วมกับ **PET Token (ERC-20)** สำหรับระบบรางวัลภารกิจและการซื้อไอเทมภายในเกม ผ่าน Smart Contracts บน BNB Smart Chain Testnet
+**My Pet Token** เป็นเกมเลี้ยงสัตว์เสมือนจริงที่พัฒนาบนเว็บไซต์ โดยประยุกต์ใช้เทคโนโลยี Web3 และ Blockchain ร่วมกับ **PET Token (ERC-20)** สำหรับระบบรางวัลภารกิจและการซื้อไอเทมภายในเกม ผ่าน Smart Contracts บน **BNB Smart Chain Testnet**
 
 ---
 
@@ -17,11 +17,11 @@
 
 ## 🌟 2. ฟีเจอร์หลักของเกม (Key Features)
 
-* **Virtual Pet System:** เลือกสัตว์เลี้ยงได้ 4 ชนิด ได้แก่ แมว สุนัข คาปิบาร่า และกระต่าย
-* **Pet Activities:** ดูแลสัตว์เลี้ยงด้วยการให้อาหาร เล่นบอล สั่งนั่ง และพาเดินเล่น
-* **Mission & Rewards:** ทำภารกิจเพื่อรับ PET Token ตามเงื่อนไขที่กำหนด
-* **Shop & Inventory:** ใช้ PET Token ซื้อเครื่องประดับ เฟอร์นิเจอร์ และฉากตกแต่งภายในเกม
-* **Web3 Integration:** เชื่อมต่อ MetaMask เพื่อตรวจสอบยอดโทเคนและทำธุรกรรมบน BNB Smart Chain Testnet
+- **Virtual Pet System:** เลือกสัตว์เลี้ยงได้ 4 ชนิด ได้แก่ แมว สุนัข คาปิบาร่า และกระต่าย
+- **Pet Activities:** ดูแลสัตว์เลี้ยงด้วยการให้อาหาร เล่นบอล สั่งนั่ง และพาเดินเล่น
+- **Mission & Rewards:** ทำภารกิจเพื่อรับ PET Token ตามเงื่อนไขที่กำหนด
+- **Shop & Inventory:** ใช้ PET Token ซื้อเครื่องประดับ เฟอร์นิเจอร์ และฉากตกแต่งภายในเกม
+- **Web3 Integration:** เชื่อมต่อ MetaMask เพื่อตรวจสอบยอดโทเคนและทำธุรกรรมบน BNB Smart Chain Testnet
 
 ---
 
@@ -29,11 +29,11 @@
 
 ระบบแบ่งการจัดการกระเป๋าเงินออกเป็น 2 ส่วนหลัก ได้แก่:
 
-* **Wallet A (Admin / Treasury Wallet):**  
+- **Wallet A (Admin / Treasury Wallet):**  
   กระเป๋าของผู้ดูแลระบบ ใช้จัดการ PET Token และโอนเหรียญสำรองเข้าสู่ RewardContract เพื่อเป็นกองทุนสำหรับจ่ายรางวัลให้ผู้เล่น
 
-* **Wallet B (Player / MetaMask Wallet):**  
-  กระเป๋าของผู้เล่นที่เชื่อมต่อกับเว็บไซต์ ใช้รับ PET Token จากภารกิจ ตรวจสอบยอดโทเคน และอนุมัติการใช้โทเคนผ่านฟังก์ชัน `approve()` เพื่อซื้อไอเทมภายในเกม
+- **Wallet B (Player / MetaMask Wallet):**  
+  กระเป๋าของผู้เล่นที่เชื่อมต่อกับเว็บไซต์ ใช้รับ PET Token จากภารกิจ ตรวจสอบยอดโทเคน และอนุมัติการใช้โทเคนผ่านฟังก์ชัน approve() เพื่อซื้อไอเทมภายในเกม
 
 ---
 
@@ -41,13 +41,13 @@
 
 โปรเจกต์พัฒนาด้วยภาษา Solidity และประกอบด้วย Smart Contracts หลัก 3 สัญญา:
 
-* 🪙 **PETToken.sol — ระบบโทเคน:**  
+- 🪙 **PETToken.sol — ระบบโทเคน:**  
   เป็นสัญญาโทเคนมาตรฐาน ERC-20 สำหรับใช้เป็นสกุลเงินภายในเกม รองรับการตรวจสอบยอดคงเหลือ การโอนโทเคน และการอนุมัติให้ Smart Contract ใช้โทเคนตามจำนวนที่กำหนด
 
-* 🎁 **RewardContract.sol — ระบบรางวัล:**  
+- 🎁 **RewardContract.sol — ระบบรางวัล:**  
   จัดการกองทุน PET Token และการจ่ายรางวัลให้ผู้เล่นผ่านภารกิจ โดยตรวจสอบเงื่อนไขและสถานะการรับรางวัล เพื่อป้องกันการรับรางวัลซ้ำตามข้อกำหนดของ Smart Contract
 
-* 🛒 **ShopContract.sol — ระบบร้านค้า:**  
+- 🛒 **ShopContract.sol — ระบบร้านค้า:**  
   จัดการรายการสินค้า ราคา และการซื้อไอเทมภายในเกม โดยผู้เล่นใช้ PET Token ชำระค่าสินค้าผ่าน Smart Contract และระบบบันทึกข้อมูลการซื้อสำหรับตรวจสอบรายการไอเทมของผู้เล่น
 
 ---
@@ -55,10 +55,10 @@
 ### 🔗 Smart Contract Addresses (BNB Smart Chain Testnet)
 
 | Smart Contract | BscScan Link |
-| :--- | :--- |
-| **PETToken** *(สัญญาที่เกมและร้านค้าอ้างอิง)* | View PET Token |
-| **RewardContract** | View RewardContract |
-| **ShopContract** | View ShopContract |
+|---|---|
+| **PETToken** | [View PET Token](https://testnet.bscscan.com/address/0xc310f5fBF788C6839eBf29836c7A899638588dD7) |
+| **RewardContract** | [View RewardContract](https://testnet.bscscan.com/address/0xCd5256Dc4Ad30E49EDAc1c78FC66e172062CeE8d#code) |
+| **ShopContract** | [View ShopContract](https://testnet.bscscan.com/address/0x0c7F4CaCC2138880F47182eb94C75585c7396357#code) |
 
 ---
 

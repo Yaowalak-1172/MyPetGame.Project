@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>My Pet Token — Web3 Interactive</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+
+  <!-- เปลี่ยนเวอร์ชันเพื่อบังคับโหลด CSS ใหม่ -->
+  <link rel="stylesheet" href="style.css?v=4">
+
+  <style>
+    /* ปุ่มเล่นกับสัตว์เลี้ยง */
+    .pet-play-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+    }
+
+    .pet-play-grid .btn-action {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 6px;
+      margin: 0;
+      border: none;
+      border-radius: 10px;
+      color: #ffffff !important;
+      font-weight: bold;
+      font-size: 13px;
+      line-height: 1.4;
+      text-align: center;
+      white-space: normal;
+      opacity: 1 !important;
+      visibility: visible !important;
+      filter: none !important;
+      cursor: pointer;
+    }
+
+    .pet-play-grid .btn-ball {
+      background: #ef4444 !important;
+    }
+
+    .pet-play-grid .btn-fetch {
+      background: #ea8800 !important;
+    }
+
+    .pet-play-grid .btn-cat-toy {
+      background: #db2777 !important;
+    }
+
+    .pet-play-grid .btn-sit {
+      background: #6d28d9 !important;
+    }
+
+    .pet-play-grid .btn-action:hover:not(:disabled) {
+      filter: brightness(1.08) !important;
+      transform: translateY(-2px);
+    }
+
+    .pet-play-grid .btn-action:disabled {
+      opacity: 0.5 !important;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="main-layout">
+
+  <!-- LEFT COLUMN -->
+  <div>
+
+    <!-- WALLET -->
+    <div class="card">
+      <div class="logo-box">
+        <span style="font-weight: bold; font-size: 1.1em;">
+          🐾 My Pet Game
+        </span>
+        <span class="badge-net">BNB Testnet</span>
+      </div>
+
+      <div class="wallet-buttons">
+        <button id="connectBtn" onclick="connectWallet()">
+          🦊 Connect MetaMask
+        </button>
+
+        <button id="addTokenBtn" onclick="addPetTokenToWallet()">
+          🪙 เพิ่มเหรียญ PET Token
+        </button>
+
+        <button id="faucetBtn" onclick="claimWelcomeBonus()">
+          🎁 รับเหรียญฟรี 10 PET
+        </button>
+      </div>
+
+      <div
+        id="walletInfo"
+        style="display:none; font-size:0.75em; margin-top:8px;"
+      >
+        <div
+          id="walletAddress"
+          style="word-break:break-all;"
+        ></div>
+
+        <div>
+          ยอดเงิน: <b id="petBalance">0</b> PET
+        </div>
+      </div>
+    </div>
+
+    <!-- PET SELECTION -->
+    <div class="card">
+      <div class="card-title">เลือกสัตว์เลี้ยง</div>
+
+      <select
+        class="custom-select"
+        onchange="changePet(this.value)"
+      >
+        <option value="capybara">🍊 Capybara (คาปิบาร่า)</option>
+        <option value="dog">🐶 Dog (หมาน้อย)</option>
+        <option value="cat">🐱 Cat (แมว)</option>
+        <option value="rabbit">🐰 Rabbit (กระต่าย)</option>
+      </select>
+    </div>
+
+    <!-- PET STATUS -->
+    <div class="card">
+
+      <div class="card-title">
+        <span>ค่าพลังสัตว์เลี้ยง</span>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-label">
+          <span>🍖 ความอิ่ม:</span>
+          <span id="hungerVal">0/100</span>
+        </div>
+
+        <div class="bar-bg">
+          <div
+            id="hungerBar"
+            class="bar-fill fill-hunger"
+            style="width: 0%;"
+          ></div>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-label">
+          <span>😄 ความสุข:</span>
+          <span id="happinessVal">0/100</span>
+        </div>
+
+        <div class="bar-bg">
+          <div
+            id="happinessBar"
+            class="bar-fill fill-happy"
+            style="width: 0%;"
+          ></div>
+        </div>
+      </div>
+
+      <!-- PET ACTIONS -->
+      <div
+        class="card-title"
+        style="margin-top: 10px;"
+      >
+        สั่งการสัตว์เลี้ยง
+      </div>
+
+      <button
+        class="btn-action btn-feed"
+        onclick="feedPet()"
+      >
+        🥫 ให้อาหาร
+      </button>
+
+      <div
+        style="
+          font-size:0.85em;
+          color:#34495e;
+          font-weight:bold;
+          margin:10px 0 6px;
+        "
+      >
+        🎮 เล่นกับสัตว์เลี้ยง:
+      </div>
+
+      <!-- FIXED PLAY BUTTONS -->
+      <div class="pet-play-grid">
+
+        <button
+          type="button"
+          class="btn-action btn-ball"
+          onclick="playBall()"
+        >
+          ⚽ โยนบอล
+        </button>
+
+        <button
+          type="button"
+          class="btn-action btn-fetch"
+          onclick="fetchItem()"
+        >
+          🦴 วิ่งคาบของ
+        </button>
+
+        <button
+          type="button"
+          class="btn-action btn-cat-toy"
+          onclick="playCatToy()"
+        >
+          🎣 ไม้ตกแมว
+        </button>
+
+        <button
+          type="button"
+          class="btn-action btn-sit"
+          onclick="sitPet()"
+        >
+          🪑 สั่งนั่ง
+        </button>
+
+      </div>
+
+      <button
+        class="btn-action btn-teal"
+        style="margin-top: 8px;"
+        onclick="walkPet()"
+      >
+        🐾 สั่งเดินเล่น
+      </button>
+
+    </div>
+  </div>
+
+  <!-- CENTER COLUMN -->
+  <div class="center-section">
+
+    <div class="speech-bubble" id="petSpeech">
+      พร้อมเล่นแล้วครับเจ้าของ! 🐾
+    </div>
+
+    <canvas
+      id="petCanvas"
+      width="650"
+      height="460"
+    ></canvas>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div>
+
+    <!-- MISSIONS -->
+    <div class="card">
+      <div class="card-title">📜 Missions</div>
+
+      <div class="mission-container">
+
+        <div class="mission-item">
+          <div>
+            <b>Mission 1: ให้อาหาร 3 ครั้ง</b><br>
+            <span style="color:#7f8c8d;">
+              ความคืบหน้า:
+              <span id="m1Progress">0</span>/3
+            </span>
+          </div>
+
+          <button
+            class="btn-claim"
+            onclick="claimReward(1)"
+          >
+            Claim 10 PET
+          </button>
+        </div>
+
+        <div class="mission-item">
+          <div>
+            <b>Mission 2: เล่นกับสัตว์เลี้ยง 2 ครั้ง</b><br>
+            <span style="color:#7f8c8d;">
+              ความคืบหน้า:
+              <span id="m2Progress">0</span>/2
+            </span>
+          </div>
+
+          <button
+            class="btn-claim"
+            onclick="claimReward(2)"
+          >
+            Claim 10 PET
+          </button>
+        </div>
+
+        <div class="mission-item">
+          <div>
+            <b>Mission 3: เดินเล่น 2 ครั้ง</b><br>
+            <span style="color:#7f8c8d;">
+              ความคืบหน้า:
+              <span id="m3Progress">0</span>/2
+            </span>
+          </div>
+
+          <button
+            class="btn-claim"
+            onclick="claimReward(3)"
+          >
+            Claim 10 PET
+          </button>
+        </div>
+
+        <div class="mission-item">
+          <div>
+            <b>Mission 4: นั่ง 2 ครั้ง</b><br>
+            <span style="color:#7f8c8d;">
+              ความคืบหน้า:
+              <span id="m4Progress">0</span>/2
+            </span>
+          </div>
+
+          <button
+            class="btn-claim"
+            onclick="claimReward(4)"
+          >
+            Claim 15 PET
+          </button>
+        </div>
+
+        <div class="mission-item">
+          <div>
+            <b>Mission 5: ซื้อชุดหรือไอเทม 1 ครั้ง</b><br>
+            <span style="color:#7f8c8d;">
+              ความคืบหน้า:
+              <span id="m5Progress">0</span>/1
+            </span>
+          </div>
+
+          <button
+            class="btn-claim"
+            onclick="claimReward(5)"
+          >
+            Claim 20 PET
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SHOP & INVENTORY -->
+    <div class="card">
+      <div class="card-title">🛒 Shop & Inventory</div>
+
+      <div class="shop-container">
+
+        <!-- ACCESSORIES -->
+        <div class="shop-category-title">
+          🎩 เครื่องประดับ (Accessories)
+        </div>
+
+        <div class="shop-grid">
+
+          <div class="shop-card" data-item="hat">
+            <div class="shop-icon">🎩</div>
+            <div class="shop-title">Pirate Hat</div>
+            <div class="shop-price">15 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('hat', 15)"
+            >
+              Purchase
+            </button>
+          </div>
+
+          <div class="shop-card" data-item="glasses">
+            <div class="shop-icon">👓</div>
+            <div class="shop-title">Cool Glasses</div>
+            <div class="shop-price">10 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('glasses', 10)"
+            >
+              Purchase
+            </button>
+          </div>
+
+          <div class="shop-card" data-item="ribbon">
+            <div class="shop-icon">🎀</div>
+            <div class="shop-title">Pink Ribbon</div>
+            <div class="shop-price">15 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('ribbon', 15)"
+            >
+              Purchase
+            </button>
+          </div>
+
+          <div class="shop-card" data-item="hoodie">
+            <div class="shop-icon">🧥</div>
+            <div class="shop-title">Cool Hoodie</div>
+            <div class="shop-price">25 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('hoodie', 25)"
+            >
+              Purchase
+            </button>
+          </div>
+
+        </div>
+
+        <!-- FURNITURE -->
+        <div class="shop-category-title">
+          🛋️ เฟอร์นิเจอร์ (Furniture)
+        </div>
+
+        <div class="shop-grid">
+
+          <div class="shop-card" data-item="bed">
+            <div class="shop-icon">🛏️</div>
+            <div class="shop-title">Pet Bed</div>
+            <div class="shop-price">10 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('bed', 10)"
+            >
+              Purchase
+            </button>
+          </div>
+
+          <div class="shop-card" data-item="table">
+            <div class="shop-icon">🍽️</div>
+            <div class="shop-title">Dining Table</div>
+            <div class="shop-price">5 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('table', 5)"
+            >
+              Purchase
+            </button>
+          </div>
+
+          <div class="shop-card" data-item="frame">
+            <div class="shop-icon">🖼️</div>
+            <div class="shop-title">Photo Frame</div>
+            <div class="shop-price">5 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('frame', 5)"
+            >
+              Purchase
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ENVIRONMENTS -->
+        <div class="shop-category-title">
+          🏞️ ฉากหลัง (Environments)
+        </div>
+
+        <div class="shop-grid">
+
+          <div class="shop-card" data-item="garden">
+            <div class="shop-icon">🌳</div>
+            <div class="shop-title">Garden Scene</div>
+            <div class="shop-price">10 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('garden', 10)"
+            >
+              Purchase
+            </button>
+          </div>
+
+          <div class="shop-card" data-item="forest">
+            <div class="shop-icon">🌲</div>
+            <div class="shop-title">Forest Scene</div>
+            <div class="shop-price">5 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('forest', 5)"
+            >
+              Purchase
+            </button>
+          </div>
+
+          <div class="shop-card" data-item="beach">
+            <div class="shop-icon">🏖️</div>
+            <div class="shop-title">Beach Scene</div>
+            <div class="shop-price">10 PET</div>
+            <button
+              class="btn-buy"
+              onclick="buyItem('beach', 10)"
+            >
+              Purchase
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LOG CONSOLE -->
+    <div id="logs">
+      &gt; System Ready...<br>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
